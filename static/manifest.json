@@ -1,0 +1,19 @@
+{
+	"name": "Taped",
+	"short_name": "Taped",
+	"description": "Private real-time routine status for two partners.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait",
+	"background_color": "#f8fafc",
+	"theme_color": "#111827",
+	"icons": [
+		{
+			"src": "/icons/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	]
+}
