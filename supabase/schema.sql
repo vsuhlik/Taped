@@ -175,7 +175,7 @@ begin
 	end if;
 end $$;
 
--- After both people have signed in once or been created in Supabase Auth,
+-- After both people have been created in Supabase Auth with email/password,
 -- replace the email addresses below and run this seed block.
 -- insert into public.profiles (id, role, display_name)
 -- select id, 'husband', 'Husband'

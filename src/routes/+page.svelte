@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import type { Session } from '@supabase/supabase-js';
 	import { registerServiceWorker, subscribeToPush } from '$lib/push';
@@ -49,15 +48,18 @@
 	let loading = $state(true);
 	let message = $state('');
 	let offTimeLocal = $state('');
+	let password = $state('');
 	let profile = $state<Profile | null>(null);
 	let realtimeMessage = $state('Realtime connecting');
 	let saving = $state(false);
 	let session = $state<Session | null>(null);
 	let status = $state<SharedStatus | null>(null);
 
+	let hydrateVersion = 0;
 	let unsubscribeRealtime: (() => void) | null = null;
 
 	const wifeStatus = $derived(status ? wifeStatuses[status.wife_status] : wifeStatuses.not_ready);
+	const pushConfigured = $derived(Boolean(import.meta.env.VITE_PUBLIC_VAPID_KEY));
 
 	onMount(() => {
 		if (!isSupabaseConfigured) {
@@ -67,13 +69,12 @@
 		}
 
 		void registerServiceWorker();
-		void initializeSession();
 
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, nextSession) => {
 			session = nextSession;
-			void hydrateAuthenticatedUser();
+			void hydrateAuthenticatedUser(nextSession);
 		});
 
 		return () => {
@@ -82,20 +83,9 @@
 		};
 	});
 
-	async function initializeSession() {
-		const { data, error } = await supabase.auth.getSession();
+	async function hydrateAuthenticatedUser(nextSession: Session | null) {
+		const currentHydration = (hydrateVersion += 1);
 
-		if (error) {
-			errorMessage = error.message;
-			loading = false;
-			return;
-		}
-
-		session = data.session;
-		await hydrateAuthenticatedUser();
-	}
-
-	async function hydrateAuthenticatedUser() {
 		loading = true;
 		errorMessage = '';
 		message = '';
@@ -104,20 +94,31 @@
 		unsubscribeRealtime?.();
 		unsubscribeRealtime = null;
 
-		if (!session) {
+		if (!nextSession) {
 			loading = false;
 			realtimeMessage = 'Signed out';
 			return;
 		}
 
 		try {
-			profile = await getProfile(session.user.id);
-			status = await getSharedStatus();
-			syncOffTimeDraft(status);
+			const nextProfile = await getProfile(nextSession.user.id);
+			const nextStatus = await getSharedStatus();
+
+			if (currentHydration !== hydrateVersion) {
+				return;
+			}
+
+			profile = nextProfile;
+			status = nextStatus;
+			syncOffTimeDraft(nextStatus);
 			realtimeMessage = 'Realtime connected';
 
 			unsubscribeRealtime = subscribeToSharedStatus(
 				(nextStatus) => {
+					if (currentHydration !== hydrateVersion) {
+						return;
+					}
+
 					status = nextStatus;
 					syncOffTimeDraft(nextStatus);
 					realtimeMessage = 'Realtime connected';
@@ -127,31 +128,32 @@
 				}
 			);
 		} catch (error) {
+			if (currentHydration !== hydrateVersion) {
+				return;
+			}
+
 			errorMessage = messageFromError(error);
 		} finally {
-			loading = false;
+			if (currentHydration === hydrateVersion) {
+				loading = false;
+			}
 		}
 	}
 
-	async function sendMagicLink(event: SubmitEvent) {
+	async function signInWithPassword(event: SubmitEvent) {
 		event.preventDefault();
 		authBusy = true;
 		errorMessage = '';
 		message = '';
 
 		try {
-			const { error } = await supabase.auth.signInWithOtp({
-				email,
-				options: {
-					emailRedirectTo: browser ? window.location.origin : undefined
-				}
-			});
+			const { error } = await supabase.auth.signInWithPassword({ email, password });
 
 			if (error) {
 				throw error;
 			}
 
-			message = 'Check your email for the sign-in link.';
+			password = '';
 		} catch (error) {
 			errorMessage = messageFromError(error);
 		} finally {
@@ -320,15 +322,27 @@
 			</section>
 		{:else if !session}
 			<section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-				<form class="grid gap-4" onsubmit={sendMagicLink}>
+				<form class="grid gap-4" onsubmit={signInWithPassword}>
 					<label class="grid gap-2 text-sm font-semibold text-slate-700">
 						Email
 						<input
 							bind:value={email}
+							autocomplete="email"
 							class="h-12 rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none ring-slate-900 transition focus:ring-2"
 							placeholder="you@example.com"
 							required
 							type="email"
+						/>
+					</label>
+
+					<label class="grid gap-2 text-sm font-semibold text-slate-700">
+						Password
+						<input
+							bind:value={password}
+							autocomplete="current-password"
+							class="h-12 rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none ring-slate-900 transition focus:ring-2"
+							required
+							type="password"
 						/>
 					</label>
 
@@ -337,7 +351,7 @@
 						class="h-12 rounded-lg bg-slate-950 px-4 text-base font-bold text-white shadow-sm"
 						disabled={authBusy}
 					>
-						Send sign-in link
+						Sign in
 					</button>
 				</form>
 			</section>
@@ -427,9 +441,10 @@
 			<button
 				type="button"
 				class="h-11 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm"
+				disabled={!pushConfigured}
 				onclick={enablePush}
 			>
-				Enable alerts
+				{pushConfigured ? 'Enable alerts' : 'Alerts unavailable'}
 			</button>
 		{/if}
 	</div>

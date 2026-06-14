@@ -57,8 +57,10 @@ export async function setWifeStatus(wifeStatus: WifeStatus) {
 }
 
 export function subscribeToSharedStatus(onStatus: (status: SharedStatus) => void, onError: (message: string) => void) {
+	const channelName = `shared-status-updates-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 	const channel = supabase
-		.channel('shared-status-updates')
+		.channel(channelName)
 		.on(
 			'postgres_changes',
 			{

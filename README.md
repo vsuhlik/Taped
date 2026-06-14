@@ -19,16 +19,26 @@ A private SvelteKit, Tailwind CSS, TypeScript, and Supabase PWA for two-person r
 
 1. Create a Supabase project.
 2. In Supabase SQL Editor, run `supabase/schema.sql`.
-3. Create or invite the two Auth users.
-4. Run the seed block at the bottom of `supabase/schema.sql` after replacing `husband@example.com` and `wife@example.com`.
-5. Copy `.env.example` to `.env` and fill in:
+3. Go to Authentication -> Sign In / Providers and make sure the Email provider is enabled.
+4. Go to Authentication -> Users and create exactly two users with email/password credentials.
+5. Go to Authentication -> Settings and disable public signups if you want only those existing users to be able to sign in.
+6. Run the seed block at the bottom of `supabase/schema.sql` after replacing `husband@example.com` and `wife@example.com`.
+7. Copy `.env.example` to `.env` and fill in:
 
 ```sh
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-`VITE_PUBLIC_VAPID_KEY` is optional until you wire up a server-side Web Push sender or Supabase Edge Function. Keep the matching VAPID private key server-side only.
+The app intentionally has no signup form and no magic-link flow. Supabase Auth users are created ahead of time in the dashboard, then the app signs those existing users in with email and password.
+
+Generate Web Push VAPID keys when you are ready to test lock screen alerts:
+
+```sh
+npm run generate:vapid
+```
+
+Put the `VITE_PUBLIC_VAPID_KEY` value in `.env`. Keep `VAPID_PRIVATE_KEY` server-side only, for example in a Supabase Edge Function secret. Do not commit either real key value.
 
 ## Run locally
 
