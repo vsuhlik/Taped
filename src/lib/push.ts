@@ -52,6 +52,43 @@ export async function subscribeToPush(userId: string, publicVapidKey = import.me
 	return { ok: true, subscription: subscriptionJson } satisfies PushRegistrationResult;
 }
 
+export async function getCurrentPushSubscription(): Promise<PushSubscription | null> {
+	if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+		return null;
+	}
+
+	const registration = await navigator.serviceWorker.getRegistration();
+
+	if (!registration) {
+		return null;
+	}
+
+	return registration.pushManager.getSubscription();
+}
+
+export async function unsubscribeFromPush() {
+	if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+		return;
+	}
+
+	const registration = await navigator.serviceWorker.getRegistration();
+
+	if (!registration) {
+		return;
+	}
+
+	const subscription = await registration.pushManager.getSubscription();
+
+	if (!subscription) {
+		return;
+	}
+
+	const endpoint = subscription.endpoint;
+
+	await subscription.unsubscribe();
+	await supabase.from('push_subscriptions').delete().eq('endpoint', endpoint);
+}
+
 function urlBase64ToUint8Array(base64String: string) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 	const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');

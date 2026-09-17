@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Session } from '@supabase/supabase-js';
-	import { registerServiceWorker, subscribeToPush } from '$lib/push';
+	import {
+		getCurrentPushSubscription,
+		registerServiceWorker,
+		subscribeToPush,
+		unsubscribeFromPush
+	} from '$lib/push';
 	import { isSupabaseConfigured, supabase } from '$lib/supabase';
 	import {
 		getProfile,
@@ -50,6 +55,7 @@
 	let offTimeLocal = $state('');
 	let password = $state('');
 	let profile = $state<Profile | null>(null);
+	let pushSubscribed = $state<boolean | null>(null);
 	let realtimeMessage = $state('Realtime connecting');
 	let saving = $state(false);
 	let session = $state<Session | null>(null);
@@ -68,7 +74,9 @@
 			return;
 		}
 
-		void registerServiceWorker();
+		void registerServiceWorker().then(async () => {
+			pushSubscribed = Boolean(await getCurrentPushSubscription());
+		});
 
 		const {
 			data: { subscription }
@@ -203,16 +211,29 @@
 		}
 	}
 
-	async function enablePush() {
+	async function togglePush() {
 		if (!session) {
 			return;
 		}
 
 		errorMessage = '';
 		message = '';
+
+		if (pushSubscribed) {
+			try {
+				await unsubscribeFromPush();
+				pushSubscribed = false;
+				message = 'Lock screen alerts are disabled on this device.';
+			} catch (error) {
+				errorMessage = messageFromError(error);
+			}
+			return;
+		}
+
 		const result = await subscribeToPush(session.user.id);
 
 		if (result.ok) {
+			pushSubscribed = true;
 			message = 'Lock screen alerts are enabled on this device.';
 		} else {
 			errorMessage = result.reason;
@@ -441,10 +462,18 @@
 			<button
 				type="button"
 				class="h-11 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm"
-				disabled={!pushConfigured}
-				onclick={enablePush}
+				disabled={!pushConfigured || pushSubscribed === null}
+				onclick={togglePush}
 			>
-				{pushConfigured ? 'Enable alerts' : 'Alerts unavailable'}
+				{#if !pushConfigured}
+					Alerts unavailable
+				{:else if pushSubscribed === null}
+					Checking alerts…
+				{:else if pushSubscribed}
+					Alerts on — tap to disable
+				{:else}
+					Enable alerts
+				{/if}
 			</button>
 		{/if}
 	</div>
