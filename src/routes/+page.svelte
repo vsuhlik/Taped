@@ -244,6 +244,17 @@
 		}
 	}
 
+	async function setQuickOffTime(daysFromNow: number) {
+		const target = new Date();
+		target.setDate(target.getDate() + daysFromNow);
+		target.setHours(22, 0, 0, 0);
+
+		const localDate = new Date(target.getTime() - target.getTimezoneOffset() * 60_000);
+		offTimeLocal = localDate.toISOString().slice(0, 16);
+
+		await updateHusbandStatus(true);
+	}
+
 	async function updateWifeStatus(nextStatus: WifeStatus) {
 		saving = true;
 		errorMessage = '';
@@ -489,24 +500,63 @@
 
 						{#if status.husband_is_taped}
 							<div class="mt-5 grid gap-3">
-								<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
-									Estimated off-time
-									<input
-										bind:value={offTimeLocal}
-										class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
+								<p class="text-sm font-semibold text-[#7a6b5e]">When will you be off?</p>
+								<div class="grid grid-cols-4 gap-2">
+									<button
+										type="button"
+										class="rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-2 py-3 text-sm font-bold text-[#2a1e18] shadow-soft transition active:scale-[0.97]"
 										disabled={saving}
-										type="datetime-local"
-									/>
-								</label>
+										onclick={() => setQuickOffTime(0)}
+									>
+										Tonight
+									</button>
+									<button
+										type="button"
+										class="rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-2 py-3 text-sm font-bold text-[#2a1e18] shadow-soft transition active:scale-[0.97]"
+										disabled={saving}
+										onclick={() => setQuickOffTime(1)}
+									>
+										Tomorrow
+									</button>
+									<button
+										type="button"
+										class="rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-2 py-3 text-sm font-bold text-[#2a1e18] shadow-soft transition active:scale-[0.97]"
+										disabled={saving}
+										onclick={() => setQuickOffTime(2)}
+									>
+										2 days
+									</button>
+									<button
+										type="button"
+										class="rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-2 py-3 text-sm font-bold text-[#2a1e18] shadow-soft transition active:scale-[0.97]"
+										disabled={saving}
+										onclick={() => setQuickOffTime(3)}
+									>
+										3 days
+									</button>
+								</div>
 
-								<button
-									type="button"
-									class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-4 text-base font-bold text-[#2a1e18] shadow-soft"
-									disabled={saving}
-									onclick={() => updateHusbandStatus(status?.husband_is_taped ?? false)}
-								>
-									Save off-time
-								</button>
+								<details class="mt-1 rounded-2xl border border-[#ebe1d5] bg-[#faf6f0] px-4 py-3">
+									<summary class="cursor-pointer text-sm font-semibold text-[#7a6b5e]">
+										Or pick a custom time
+									</summary>
+									<div class="mt-3 grid gap-3">
+										<input
+											bind:value={offTimeLocal}
+											class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
+											disabled={saving}
+											type="datetime-local"
+										/>
+										<button
+											type="button"
+											class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-4 text-base font-bold text-[#2a1e18] shadow-soft"
+											disabled={saving}
+											onclick={() => updateHusbandStatus(status?.husband_is_taped ?? false)}
+										>
+											Save
+										</button>
+									</div>
+								</details>
 							</div>
 						{/if}
 					</div>
