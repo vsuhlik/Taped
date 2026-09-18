@@ -303,8 +303,10 @@
 	<div class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-5 px-4 py-5 sm:px-6 sm:py-8">
 		<header class="flex items-center justify-between gap-4">
 			<div>
-				<p class="text-sm font-semibold text-slate-500">Taped</p>
-				<h1 class="text-2xl font-bold text-slate-950">Shared Status</h1>
+				<p class="font-display text-3xl font-medium italic leading-none text-slate-950">Je t'aime</p>
+				<p class="mt-2 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-slate-500">
+					Shared status
+				</p>
 			</div>
 
 			{#if profile}
@@ -393,8 +395,10 @@
 
 			{#if profile.role === 'husband'}
 				<section class={`rounded-lg border p-6 shadow-sm sm:p-8 ${wifeStatus.cardClass}`}>
-					<p class="text-base font-bold opacity-75">Wife is</p>
-					<p class="mt-3 text-5xl font-black leading-none sm:text-7xl">{wifeStatus.label}</p>
+					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">Wife is</p>
+					<p class="font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl">
+						{wifeStatus.label}
+					</p>
 				</section>
 
 				<section class="grid gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -407,7 +411,7 @@
 
 					<button
 						type="button"
-						class={`min-h-24 rounded-lg px-5 text-3xl font-black text-white shadow-sm transition active:scale-[0.99] ${
+						class={`font-display min-h-24 rounded-lg px-5 text-4xl font-medium text-white shadow-sm transition active:scale-[0.99] ${
 							status.husband_is_taped ? 'bg-green-600' : 'bg-slate-950'
 						}`}
 						disabled={saving}
@@ -437,8 +441,8 @@
 				</section>
 			{:else}
 				<section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-					<p class="text-base font-bold text-slate-500">Husband is</p>
-					<p class={`mt-3 text-5xl font-black leading-none sm:text-7xl ${status.husband_is_taped ? 'text-green-700' : 'text-slate-900'}`}>
+					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-slate-500">Husband is</p>
+					<p class={`font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-green-700' : 'text-slate-900'}`}>
 						{status.husband_is_taped ? 'Taped' : 'Not Taped'}
 					</p>
 					<div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
