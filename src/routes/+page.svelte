@@ -387,124 +387,136 @@
 
 			{#if profile.role === 'husband'}
 				<section
-					class={`animate-fade-up rounded-3xl border p-6 shadow-soft-lg sm:p-8 ${wifeStatus.cardClass}`}
+					class={`animate-fade-up overflow-hidden rounded-3xl border shadow-soft-lg ${wifeStatus.cardClass}`}
 					style="animation-delay: 0ms"
 				>
-					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">Wife is</p>
-					{#key wifeStatus.label}
-						<p
-							class="font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl"
-						>
-							{wifeStatus.label}
-						</p>
-					{/key}
-				</section>
-
-				<section
-					class="animate-fade-up grid gap-4 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-soft sm:p-6"
-					style="animation-delay: 100ms"
-				>
-					<div class="flex items-center justify-between gap-4">
-						<div>
-							<h2 class="text-xl font-bold text-[#2a1e18]">Tape Status</h2>
-							<p class="mt-1 flex items-center gap-1.5 text-sm text-[#7a6b5e]">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="13"
-									height="13"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								>
-									<circle cx="12" cy="12" r="10" />
-									<polyline points="12 6 12 12 16 14" />
-								</svg>
-								<span>Estimated off: {formatDateTime(status.tape_estimated_off)}</span>
+					<div class="p-6 sm:p-8">
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">Wife is</p>
+						{#key wifeStatus.label}
+							<p
+								class="font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl"
+							>
+								{wifeStatus.label}
 							</p>
-						</div>
+						{/key}
 					</div>
 
-					<button
-						type="button"
-						class={`font-display min-h-24 rounded-3xl px-5 text-4xl font-medium text-[#fffdfb] shadow-soft transition active:scale-[0.97] ${
-							status.husband_is_taped ? 'bg-[#4a7a3a]' : 'bg-[#2a1e18]'
-						}`}
-						disabled={saving}
-						onclick={toggleTaped}
-					>
-						{status.husband_is_taped ? 'Taped' : 'Not Taped'}
-					</button>
+					<div class="border-t border-black/10 bg-[#fffdfb] p-6 text-[#2a1e18] sm:p-8">
+						<div class="flex items-center justify-between gap-4">
+							<div>
+								<h2 class="text-xl font-bold text-[#2a1e18]">Tape Status</h2>
+								{#if status.husband_is_taped}
+									<p class="mt-1 flex items-center gap-1.5 text-sm text-[#7a6b5e]">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="13"
+											height="13"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<circle cx="12" cy="12" r="10" />
+											<polyline points="12 6 12 12 16 14" />
+										</svg>
+										<span>Off {formatDateTime(status.tape_estimated_off)}</span>
+									</p>
+								{/if}
+							</div>
+						</div>
 
-					<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
-						Estimated off-time
-						<input
-							bind:value={offTimeLocal}
-							class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
-							disabled={!status.husband_is_taped || saving}
-							type="datetime-local"
-						/>
-					</label>
+						<button
+							type="button"
+							class={`font-display mt-4 min-h-20 w-full rounded-2xl px-5 text-3xl font-medium text-[#fffdfb] shadow-soft transition active:scale-[0.97] ${
+								status.husband_is_taped ? 'bg-[#4a7a3a]' : 'bg-[#2a1e18]'
+							}`}
+							disabled={saving}
+							onclick={toggleTaped}
+						>
+							{status.husband_is_taped ? 'Taped' : 'Not Taped'}
+						</button>
 
-					<button
-						type="button"
-						class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-4 text-base font-bold text-[#2a1e18] shadow-soft"
-						disabled={!status.husband_is_taped || saving}
-						onclick={() => updateHusbandStatus(status?.husband_is_taped ?? false)}
-					>
-						Save off-time
-					</button>
+						{#if status.husband_is_taped}
+							<div class="mt-5 grid gap-3">
+								<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
+									Estimated off-time
+									<input
+										bind:value={offTimeLocal}
+										class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
+										disabled={saving}
+										type="datetime-local"
+									/>
+								</label>
+
+								<button
+									type="button"
+									class="h-12 rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-4 text-base font-bold text-[#2a1e18] shadow-soft"
+									disabled={saving}
+									onclick={() => updateHusbandStatus(status?.husband_is_taped ?? false)}
+								>
+									Save off-time
+								</button>
+							</div>
+						{/if}
+					</div>
 				</section>
 			{:else}
 				<section
-					class="animate-fade-up rounded-3xl border border-[#ebe1d5] bg-[#fffdfb] p-6 shadow-soft-lg sm:p-8"
+					class="animate-fade-up overflow-hidden rounded-3xl border border-[#ebe1d5] bg-[#fffdfb] shadow-soft-lg"
 					style="animation-delay: 0ms"
 				>
-					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">Husband is</p>
-					{#key status.husband_is_taped}
-						<p
-							class={`font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}
-						>
-							{status.husband_is_taped ? 'Taped' : 'Not Taped'}
-						</p>
-					{/key}
-					<div class="mt-6 rounded-2xl border border-[#ebe1d5] bg-[#faf6f0] p-4">
-						<p class="flex items-center gap-1.5 text-sm font-semibold text-[#7a6b5e]">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="13"
-								height="13"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
+					<div class="p-6 sm:p-8">
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">Husband is</p>
+						{#key status.husband_is_taped}
+							<p
+								class={`font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}
 							>
-								<circle cx="12" cy="12" r="10" />
-								<polyline points="12 6 12 12 16 14" />
-							</svg>
-							<span>Estimated off-time</span>
-						</p>
-						<p class="mt-1 text-2xl font-black text-[#2a1e18]">{formatDateTime(status.tape_estimated_off)}</p>
+								{status.husband_is_taped ? 'Taped' : 'Not Taped'}
+							</p>
+						{/key}
+						{#if status.husband_is_taped}
+							<div class="mt-6 rounded-2xl border border-[#ebe1d5] bg-[#faf6f0] p-4">
+								<p class="flex items-center gap-1.5 text-sm font-semibold text-[#7a6b5e]">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="13"
+										height="13"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									>
+										<circle cx="12" cy="12" r="10" />
+										<polyline points="12 6 12 12 16 14" />
+									</svg>
+									<span>Estimated off-time</span>
+								</p>
+								<p class="mt-1 text-2xl font-black text-[#2a1e18]">{formatDateTime(status.tape_estimated_off)}</p>
+							</div>
+						{/if}
 					</div>
-				</section>
 
-				<section class="animate-fade-up grid gap-3" style="animation-delay: 100ms">
-					{#each wifeStatusOptions as option (option.value)}
-						<button
-							type="button"
-							class={`min-h-20 rounded-2xl border px-5 text-left text-2xl font-black shadow-soft transition active:scale-[0.97] ${
-								status.wife_status === option.value ? option.buttonClass : 'border-[#ebe1d5] bg-[#fffdfb] text-[#2a1e18]'
-							}`}
-							disabled={saving}
-							onclick={() => updateWifeStatus(option.value)}
-						>
-							{option.shortLabel}
-						</button>
-					{/each}
+					<div class="border-t border-[#ebe1d5] bg-[#fffdfb] p-6 sm:p-8">
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">You</p>
+						<div class="mt-4 grid gap-3">
+							{#each wifeStatusOptions as option (option.value)}
+								<button
+									type="button"
+									class={`min-h-20 rounded-2xl border px-5 text-left text-2xl font-black shadow-soft transition active:scale-[0.97] ${
+										status.wife_status === option.value ? option.buttonClass : 'border-[#ebe1d5] bg-[#fffdfb] text-[#2a1e18]'
+									}`}
+									disabled={saving}
+									onclick={() => updateWifeStatus(option.value)}
+								>
+									{option.shortLabel}
+								</button>
+							{/each}
+						</div>
+					</div>
 				</section>
 			{/if}
 
