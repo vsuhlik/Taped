@@ -21,20 +21,20 @@
 		not_ready: {
 			label: 'Not Ready',
 			shortLabel: 'Not ready',
-			cardClass: 'border-slate-200 bg-slate-100 text-slate-700',
-			buttonClass: 'border-slate-300 bg-slate-100 text-slate-800'
+			cardClass: 'border-[#ebe1d5] bg-[#f5efe7] text-[#6b5a4b]',
+			buttonClass: 'border-[#ebe1d5] bg-[#f5efe7] text-[#6b5a4b]'
 		},
 		interested_later: {
 			label: 'Interested Later',
 			shortLabel: 'Later',
-			cardClass: 'border-yellow-300 bg-yellow-100 text-yellow-900',
-			buttonClass: 'border-yellow-300 bg-yellow-100 text-yellow-950'
+			cardClass: 'border-[#e5c58a] bg-[#fbf1dc] text-[#8a6519]',
+			buttonClass: 'border-[#e5c58a] bg-[#fbf1dc] text-[#8a6519]'
 		},
 		ready_now: {
 			label: 'Ready Now',
 			shortLabel: 'Ready now',
-			cardClass: 'animate-pulse border-green-300 bg-green-100 text-green-950 ring-2 ring-green-300',
-			buttonClass: 'border-green-400 bg-green-600 text-white'
+			cardClass: 'animate-pulse border-[#8b3a4a] bg-[#8b3a4a] text-[#fffdfb] ring-2 ring-[#8b3a4a]',
+			buttonClass: 'border-[#8b3a4a] bg-[#8b3a4a] text-[#fffdfb]'
 		}
 	} satisfies Record<
 		WifeStatus,
@@ -299,25 +299,25 @@
 	<title>Je t'aime</title>
 </svelte:head>
 
-<main class="min-h-screen bg-slate-50 text-slate-950">
+<main class="min-h-screen bg-[#faf6f0] text-[#2a1e18]">
 	<div class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-5 px-4 py-5 sm:px-6 sm:py-8">
 		<header class="flex items-center justify-between gap-4">
 			<div>
-				<p class="font-display text-3xl font-medium italic leading-none text-slate-950">Je t'aime</p>
-				<p class="mt-2 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-slate-500">
+				<p class="font-display text-3xl font-medium italic leading-none text-[#2a1e18]">Je t'aime</p>
+				<p class="mt-2 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#7a6b5e]">
 					Shared status
 				</p>
 			</div>
 
 			{#if profile}
 				<div class="flex items-center gap-2">
-					<div class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-right shadow-sm">
-						<p class="text-sm font-semibold text-slate-950">{profile.display_name}</p>
-						<p class="text-xs capitalize text-slate-500">{profile.role}</p>
+					<div class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-3 py-2 text-right shadow-sm">
+						<p class="text-sm font-semibold text-[#2a1e18]">{profile.display_name}</p>
+						<p class="text-xs capitalize text-[#7a6b5e]">{profile.role}</p>
 					</div>
 					<button
 						type="button"
-						class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+						class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-3 py-2 text-sm font-semibold text-[#7a6b5e] shadow-sm"
 						onclick={signOut}
 					>
 						Sign out
@@ -327,47 +327,47 @@
 		</header>
 
 		{#if errorMessage}
-			<p class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+			<p class="rounded-lg border border-[#e8b4b4] bg-[#f8e5e5] px-4 py-3 text-sm font-medium text-[#8b3a3a]">
 				{errorMessage}
 			</p>
 		{/if}
 
 		{#if message}
-			<p class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+			<p class="rounded-lg border border-[#c5d4b8] bg-[#eef2e8] px-4 py-3 text-sm font-medium text-[#4a6b3a]">
 				{message}
 			</p>
 		{/if}
 
 		{#if !isSupabaseConfigured}
-			<section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+			<section class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-sm">
 				<h2 class="text-lg font-bold">Supabase env needed</h2>
-				<p class="mt-2 text-sm text-slate-600">Copy .env.example to .env and fill in your project URL and anon key.</p>
+				<p class="mt-2 text-sm text-[#7a6b5e]">Copy .env.example to .env and fill in your project URL and anon key.</p>
 			</section>
 		{:else if loading}
-			<section class="rounded-lg border border-slate-200 bg-white p-5 text-sm font-semibold text-slate-600 shadow-sm">
+			<section class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] p-5 text-sm font-semibold text-[#7a6b5e] shadow-sm">
 				Loading secure status...
 			</section>
 		{:else if !session}
-			<section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+			<section class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-sm">
 				<form class="grid gap-4" onsubmit={signInWithPassword}>
-					<label class="grid gap-2 text-sm font-semibold text-slate-700">
+					<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
 						Email
 						<input
 							bind:value={email}
 							autocomplete="email"
-							class="h-12 rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none ring-slate-900 transition focus:ring-2"
+							class="h-12 rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
 							placeholder="you@example.com"
 							required
 							type="email"
 						/>
 					</label>
 
-					<label class="grid gap-2 text-sm font-semibold text-slate-700">
+					<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
 						Password
 						<input
 							bind:value={password}
 							autocomplete="current-password"
-							class="h-12 rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none ring-slate-900 transition focus:ring-2"
+							class="h-12 rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
 							required
 							type="password"
 						/>
@@ -375,7 +375,7 @@
 
 					<button
 						type="submit"
-						class="h-12 rounded-lg bg-slate-950 px-4 text-base font-bold text-white shadow-sm"
+						class="h-12 rounded-lg bg-[#8b3a4a] px-4 text-base font-bold text-[#fffdfb] shadow-sm"
 						disabled={authBusy}
 					>
 						Sign in
@@ -383,12 +383,12 @@
 				</form>
 			</section>
 		{:else if !profile}
-			<section class="rounded-lg border border-yellow-200 bg-yellow-50 p-5 shadow-sm">
-				<h2 class="text-lg font-bold text-yellow-950">Profile not assigned</h2>
-				<p class="mt-2 text-sm text-yellow-900">Run the seed block in supabase/schema.sql for this signed-in email.</p>
+			<section class="rounded-lg border border-[#e5c58a] bg-[#fbf1dc] p-5 shadow-sm">
+				<h2 class="text-lg font-bold text-[#8a6519]">Profile not assigned</h2>
+				<p class="mt-2 text-sm text-[#8a6519]">Run the seed block in supabase/schema.sql for this signed-in email.</p>
 			</section>
 		{:else if status}
-			<div class="flex items-center justify-between gap-3 text-xs font-semibold text-slate-500">
+			<div class="flex items-center justify-between gap-3 text-xs font-semibold text-[#a89b8c]">
 				<span>{realtimeMessage}</span>
 				<span>Updated {formatLastUpdated(status.last_updated)}</span>
 			</div>
@@ -401,18 +401,18 @@
 					</p>
 				</section>
 
-				<section class="grid gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+				<section class="grid gap-4 rounded-lg border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-sm sm:p-6">
 					<div class="flex items-center justify-between gap-4">
 						<div>
-							<h2 class="text-xl font-bold text-slate-950">Tape Status</h2>
-							<p class="text-sm text-slate-500">Estimated off: {formatDateTime(status.tape_estimated_off)}</p>
+							<h2 class="text-xl font-bold text-[#2a1e18]">Tape Status</h2>
+							<p class="text-sm text-[#7a6b5e]">Estimated off: {formatDateTime(status.tape_estimated_off)}</p>
 						</div>
 					</div>
 
 					<button
 						type="button"
-						class={`font-display min-h-24 rounded-lg px-5 text-4xl font-medium text-white shadow-sm transition active:scale-[0.99] ${
-							status.husband_is_taped ? 'bg-green-600' : 'bg-slate-950'
+						class={`font-display min-h-24 rounded-lg px-5 text-4xl font-medium text-[#fffdfb] shadow-sm transition active:scale-[0.99] ${
+							status.husband_is_taped ? 'bg-[#4a7a3a]' : 'bg-[#2a1e18]'
 						}`}
 						disabled={saving}
 						onclick={toggleTaped}
@@ -420,11 +420,11 @@
 						{status.husband_is_taped ? 'Taped' : 'Not Taped'}
 					</button>
 
-					<label class="grid gap-2 text-sm font-semibold text-slate-700">
+					<label class="grid gap-2 text-sm font-semibold text-[#7a6b5e]">
 						Estimated off-time
 						<input
 							bind:value={offTimeLocal}
-							class="h-12 rounded-lg border border-slate-300 bg-white px-3 text-base text-slate-950 outline-none ring-slate-900 transition focus:ring-2"
+							class="h-12 rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
 							disabled={!status.husband_is_taped || saving}
 							type="datetime-local"
 						/>
@@ -432,7 +432,7 @@
 
 					<button
 						type="button"
-						class="h-12 rounded-lg border border-slate-300 bg-slate-100 px-4 text-base font-bold text-slate-950 shadow-sm"
+						class="h-12 rounded-lg border border-[#ebe1d5] bg-[#f5efe7] px-4 text-base font-bold text-[#2a1e18] shadow-sm"
 						disabled={!status.husband_is_taped || saving}
 						onclick={() => updateHusbandStatus(status?.husband_is_taped ?? false)}
 					>
@@ -440,14 +440,14 @@
 					</button>
 				</section>
 			{:else}
-				<section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-slate-500">Husband is</p>
-					<p class={`font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-green-700' : 'text-slate-900'}`}>
+				<section class="rounded-lg border border-[#ebe1d5] bg-[#fffdfb] p-6 shadow-sm sm:p-8">
+					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">Husband is</p>
+					<p class={`font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}>
 						{status.husband_is_taped ? 'Taped' : 'Not Taped'}
 					</p>
-					<div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-						<p class="text-sm font-semibold text-slate-500">Estimated off-time</p>
-						<p class="mt-1 text-2xl font-black text-slate-950">{formatDateTime(status.tape_estimated_off)}</p>
+					<div class="mt-6 rounded-lg border border-[#ebe1d5] bg-[#faf6f0] p-4">
+						<p class="text-sm font-semibold text-[#7a6b5e]">Estimated off-time</p>
+						<p class="mt-1 text-2xl font-black text-[#2a1e18]">{formatDateTime(status.tape_estimated_off)}</p>
 					</div>
 				</section>
 
@@ -456,7 +456,7 @@
 						<button
 							type="button"
 							class={`min-h-20 rounded-lg border px-5 text-left text-2xl font-black shadow-sm transition active:scale-[0.99] ${
-								status.wife_status === option.value ? option.buttonClass : 'border-slate-200 bg-white text-slate-950'
+								status.wife_status === option.value ? option.buttonClass : 'border-[#ebe1d5] bg-[#fffdfb] text-[#2a1e18]'
 							}`}
 							disabled={saving}
 							onclick={() => updateWifeStatus(option.value)}
@@ -469,7 +469,7 @@
 
 			<button
 				type="button"
-				class="h-11 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm"
+				class="h-11 rounded-lg border border-[#ebe1d5] bg-[#fffdfb] px-4 text-sm font-bold text-[#7a6b5e] shadow-sm"
 				disabled={!pushConfigured || pushSubscribed === null}
 				onclick={togglePush}
 			>
