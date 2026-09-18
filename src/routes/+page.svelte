@@ -292,7 +292,7 @@
 </script>
 
 <svelte:head>
-	<title>Taped</title>
+	<title>Je t'aime</title>
 </svelte:head>
 
 <main class="min-h-screen bg-slate-50 text-slate-950">

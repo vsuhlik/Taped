@@ -9,7 +9,7 @@
 	<link rel="icon" href={favicon} />
 	<link rel="manifest" href="/manifest.json" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-	<meta name="application-name" content="Taped" />
+	<meta name="application-name" content="Je t'aime" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 	<meta name="apple-mobile-web-app-title" content="Je t'aime" />
