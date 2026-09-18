@@ -11,13 +11,24 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
 type Role = 'husband' | 'wife'
 
 serve(async (req) => {
+  // CORS preflight — the browser's "can I talk to you?" check
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   try {
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      return new Response('Unauthorized', { status: 401 })
+      return new Response('Unauthorized', { status: 401, headers: corsHeaders })
     }
 
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -26,7 +37,7 @@ serve(async (req) => {
 
     const { data: userData, error: userError } = await userClient.auth.getUser()
     if (userError || !userData.user) {
-      return new Response('Unauthorized', { status: 401 })
+      return new Response('Unauthorized', { status: 401, headers: corsHeaders })
     }
 
     const userId = userData.user.id
@@ -39,7 +50,7 @@ serve(async (req) => {
       .single()
 
     if (senderError || !senderProfile) {
-      return new Response('Profile not found', { status: 404 })
+      return new Response('Profile not found', { status: 404, headers: corsHeaders })
     }
 
     const senderRole = senderProfile.role as Role
@@ -54,7 +65,7 @@ serve(async (req) => {
 
     if (!recipientProfile) {
       return new Response(JSON.stringify({ success: true, sent: 0 }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -65,7 +76,7 @@ serve(async (req) => {
 
     if (!subs || subs.length === 0) {
       return new Response(JSON.stringify({ success: true, sent: 0 }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
@@ -96,13 +107,16 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, sent: subs.length, cleaned: expiredIds.length }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (err) {
     console.error(err)
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Unknown error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
     )
   }
 })
