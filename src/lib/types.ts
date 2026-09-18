@@ -6,6 +6,9 @@ export type Profile = {
 	id: string;
 	role: AppRole;
 	display_name: string;
+	quiet_hours_start: string | null;
+	quiet_hours_end: string | null;
+	quiet_hours_tz: string | null;
 	created_at: string;
 	updated_at: string;
 };

@@ -12,6 +12,7 @@
 		getProfile,
 		getSharedStatus,
 		setHusbandTapeStatus,
+		setQuietHours,
 		setWifeStatus as saveWifeStatus,
 		subscribeToSharedStatus
 	} from '$lib/status';
@@ -57,6 +58,9 @@
 	let password = $state('');
 	let profile = $state<Profile | null>(null);
 	let pushSubscribed = $state<boolean | null>(null);
+	let quietHoursOpen = $state(false);
+	let quietStart = $state('');
+	let quietEnd = $state('');
 	let realtimeMessage = $state('Realtime connecting');
 	let heartBusy = $state(false);
 	let heartSent = $state(false);
@@ -136,6 +140,8 @@
 			profile = nextProfile;
 			status = nextStatus;
 			syncOffTimeDraft(nextStatus);
+			quietStart = (nextProfile.quiet_hours_start ?? '').slice(0, 5);
+			quietEnd = (nextProfile.quiet_hours_end ?? '').slice(0, 5);
 			realtimeMessage = 'Realtime connected';
 
 			unsubscribeRealtime = subscribeToSharedStatus(
@@ -192,6 +198,38 @@
 		}
 
 		await supabase.auth.signOut();
+	}
+
+	async function saveQuietHours() {
+		if (!profile) {
+			return;
+		}
+
+		saving = true;
+		errorMessage = '';
+		message = '';
+
+		try {
+			const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			const start = quietStart || null;
+			const end = quietEnd || null;
+
+			await setQuietHours(profile.id, start, end, start && end ? tz : null);
+
+			profile = {
+				...profile,
+				quiet_hours_start: start,
+				quiet_hours_end: end,
+				quiet_hours_tz: start && end ? tz : null
+			};
+
+			message = start && end ? 'Quiet hours saved.' : 'Quiet hours off.';
+			quietHoursOpen = false;
+		} catch (error) {
+			errorMessage = messageFromError(error);
+		} finally {
+			saving = false;
+		}
 	}
 
 	async function sendHeart() {
@@ -680,14 +718,76 @@
 						Enable alerts
 					{/if}
 				</button>
-				<button
-					type="button"
-					class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#a89b8c] transition hover:text-[#7a6b5e]"
-					onclick={signOut}
-				>
-					Sign out
-				</button>
+				<div class="flex items-center gap-4">
+					{#if profile?.role === 'wife'}
+						<button
+							type="button"
+							class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#a89b8c] transition hover:text-[#7a6b5e]"
+							onclick={() => (quietHoursOpen = !quietHoursOpen)}
+						>
+							{profile.quiet_hours_start && profile.quiet_hours_end ? 'Quiet hours on' : 'Quiet hours'}
+						</button>
+					{/if}
+					<button
+						type="button"
+						class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#a89b8c] transition hover:text-[#7a6b5e]"
+						onclick={signOut}
+					>
+						Sign out
+					</button>
+				</div>
 			</footer>
+
+			{#if quietHoursOpen && profile?.role === 'wife'}
+				<div class="animate-fade-up mt-3 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-soft">
+					<p class="text-sm font-bold text-[#2a1e18]">Quiet hours</p>
+					<p class="mt-1 text-xs text-[#7a6b5e]">
+						When on, Matt's updates won't buzz your phone during these hours. They'll still be here in the morning.
+					</p>
+
+					<div class="mt-4 grid grid-cols-2 gap-3">
+						<label class="grid gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#a89b8c]">
+							From
+							<input
+								type="time"
+								bind:value={quietStart}
+								class="h-11 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base font-normal text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
+							/>
+						</label>
+						<label class="grid gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#a89b8c]">
+							To
+							<input
+								type="time"
+								bind:value={quietEnd}
+								class="h-11 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 text-base font-normal text-[#2a1e18] outline-none ring-[#8b3a4a] transition focus:ring-2"
+							/>
+						</label>
+					</div>
+
+					<div class="mt-4 flex gap-2">
+						<button
+							type="button"
+							class="h-11 flex-1 rounded-2xl bg-[#8b3a4a] px-4 text-sm font-bold text-[#fffdfb] shadow-soft"
+							disabled={saving}
+							onclick={saveQuietHours}
+						>
+							Save
+						</button>
+						<button
+							type="button"
+							class="h-11 rounded-2xl border border-[#ebe1d5] bg-[#f5efe7] px-4 text-sm font-bold text-[#2a1e18] shadow-soft"
+							disabled={saving}
+							onclick={() => {
+								quietStart = '';
+								quietEnd = '';
+								void saveQuietHours();
+							}}
+						>
+							Turn off
+						</button>
+					</div>
+				</div>
+			{/if}
 		{/if}
 	</div>
 </main>

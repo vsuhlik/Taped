@@ -6,7 +6,7 @@ export const SHARED_STATUS_ID = 1;
 export async function getProfile(userId: string) {
 	const { data, error } = await supabase
 		.from('profiles')
-		.select('id, role, display_name, created_at, updated_at')
+		.select('id, role, display_name, quiet_hours_start, quiet_hours_end, quiet_hours_tz, created_at, updated_at')
 		.eq('id', userId)
 		.single<Profile>();
 
@@ -88,4 +88,24 @@ export function subscribeToSharedStatus(onStatus: (status: SharedStatus) => void
 	return () => {
 		void supabase.removeChannel(channel);
 	};
+}
+
+export async function setQuietHours(
+	userId: string,
+	start: string | null,
+	end: string | null,
+	tz: string | null
+) {
+	const { error } = await supabase
+		.from('profiles')
+		.update({
+			quiet_hours_start: start,
+			quiet_hours_end: end,
+			quiet_hours_tz: tz
+		})
+		.eq('id', userId);
+
+	if (error) {
+		throw error;
+	}
 }
