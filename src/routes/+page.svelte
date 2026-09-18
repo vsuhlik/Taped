@@ -33,8 +33,9 @@
 		ready_now: {
 			label: 'Ready Now',
 			shortLabel: 'Ready now',
-			cardClass: 'animate-pulse border-[#8b3a4a] bg-[#8b3a4a] text-[#fffdfb] ring-2 ring-[#8b3a4a]',
-			buttonClass: 'border-[#8b3a4a] bg-[#8b3a4a] text-[#fffdfb]'
+			cardClass:
+				'animate-breathe border-[#7a2f3e] bg-gradient-to-br from-[#9b4354] to-[#6b2a38] text-[#fffdfb]',
+			buttonClass: 'border-[#8b3a4a] bg-gradient-to-br from-[#9b4354] to-[#6b2a38] text-[#fffdfb]'
 		}
 	} satisfies Record<
 		WifeStatus,
@@ -394,14 +395,24 @@
 			</div>
 
 			{#if profile.role === 'husband'}
-				<section class={`rounded-3xl border p-6 shadow-soft-lg sm:p-8 ${wifeStatus.cardClass}`}>
+				<section
+					class={`animate-fade-up rounded-3xl border p-6 shadow-soft-lg sm:p-8 ${wifeStatus.cardClass}`}
+					style="animation-delay: 0ms"
+				>
 					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">Wife is</p>
-					<p class="font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl">
-						{wifeStatus.label}
-					</p>
+					{#key wifeStatus.label}
+						<p
+							class="font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl"
+						>
+							{wifeStatus.label}
+						</p>
+					{/key}
 				</section>
 
-				<section class="grid gap-4 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-soft sm:p-6">
+				<section
+					class="animate-fade-up grid gap-4 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] p-5 shadow-soft sm:p-6"
+					style="animation-delay: 100ms"
+				>
 					<div class="flex items-center justify-between gap-4">
 						<div>
 							<h2 class="text-xl font-bold text-[#2a1e18]">Tape Status</h2>
@@ -411,7 +422,7 @@
 
 					<button
 						type="button"
-						class={`font-display min-h-24 rounded-3xl px-5 text-4xl font-medium text-[#fffdfb] shadow-soft transition active:scale-[0.99] ${
+						class={`font-display min-h-24 rounded-3xl px-5 text-4xl font-medium text-[#fffdfb] shadow-soft transition active:scale-[0.97] ${
 							status.husband_is_taped ? 'bg-[#4a7a3a]' : 'bg-[#2a1e18]'
 						}`}
 						disabled={saving}
@@ -440,22 +451,29 @@
 					</button>
 				</section>
 			{:else}
-				<section class="rounded-3xl border border-[#ebe1d5] bg-[#fffdfb] p-6 shadow-soft-lg sm:p-8">
+				<section
+					class="animate-fade-up rounded-3xl border border-[#ebe1d5] bg-[#fffdfb] p-6 shadow-soft-lg sm:p-8"
+					style="animation-delay: 0ms"
+				>
 					<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">Husband is</p>
-					<p class={`font-display mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}>
-						{status.husband_is_taped ? 'Taped' : 'Not Taped'}
-					</p>
+					{#key status.husband_is_taped}
+						<p
+							class={`font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}
+						>
+							{status.husband_is_taped ? 'Taped' : 'Not Taped'}
+						</p>
+					{/key}
 					<div class="mt-6 rounded-2xl border border-[#ebe1d5] bg-[#faf6f0] p-4">
 						<p class="text-sm font-semibold text-[#7a6b5e]">Estimated off-time</p>
 						<p class="mt-1 text-2xl font-black text-[#2a1e18]">{formatDateTime(status.tape_estimated_off)}</p>
 					</div>
 				</section>
 
-				<section class="grid gap-3">
+				<section class="animate-fade-up grid gap-3" style="animation-delay: 100ms">
 					{#each wifeStatusOptions as option (option.value)}
 						<button
 							type="button"
-							class={`min-h-20 rounded-2xl border px-5 text-left text-2xl font-black shadow-soft transition active:scale-[0.99] ${
+							class={`min-h-20 rounded-2xl border px-5 text-left text-2xl font-black shadow-soft transition active:scale-[0.97] ${
 								status.wife_status === option.value ? option.buttonClass : 'border-[#ebe1d5] bg-[#fffdfb] text-[#2a1e18]'
 							}`}
 							disabled={saving}
@@ -469,7 +487,8 @@
 
 			<button
 				type="button"
-				class="h-11 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-4 text-sm font-bold text-[#7a6b5e] shadow-soft"
+				class="animate-fade-up h-11 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-4 text-sm font-bold text-[#7a6b5e] shadow-soft"
+				style="animation-delay: 200ms"
 				disabled={!pushConfigured || pushSubscribed === null}
 				onclick={togglePush}
 			>
