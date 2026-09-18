@@ -19,20 +19,20 @@
 
 	const wifeStatuses = {
 		not_ready: {
-			label: 'Not Ready',
-			shortLabel: 'Not ready',
+			label: 'Not tonight',
+			shortLabel: 'Not tonight',
 			cardClass: 'border-[#ebe1d5] bg-[#f5efe7] text-[#6b5a4b]',
 			buttonClass: 'border-[#ebe1d5] bg-[#f5efe7] text-[#6b5a4b]'
 		},
 		interested_later: {
-			label: 'Interested Later',
-			shortLabel: 'Later',
+			label: 'Maybe later',
+			shortLabel: 'Maybe later',
 			cardClass: 'border-[#e5c58a] bg-[#fbf1dc] text-[#8a6519]',
 			buttonClass: 'border-[#e5c58a] bg-[#fbf1dc] text-[#8a6519]'
 		},
 		ready_now: {
-			label: 'Ready Now',
-			shortLabel: 'Ready now',
+			label: 'Ready now',
+			shortLabel: "I'm ready",
 			cardClass:
 				'animate-breathe border-[#7a2f3e] bg-gradient-to-br from-[#9b4354] to-[#6b2a38] text-[#fffdfb]',
 			buttonClass: 'border-[#8b3a4a] bg-gradient-to-br from-[#9b4354] to-[#6b2a38] text-[#fffdfb]'
@@ -61,6 +61,7 @@
 	let saving = $state(false);
 	let session = $state<Session | null>(null);
 	let status = $state<SharedStatus | null>(null);
+	let now = $state(Date.now());
 
 	let hydrateVersion = 0;
 	let unsubscribeRealtime: (() => void) | null = null;
@@ -94,7 +95,12 @@
 			void hydrateAuthenticatedUser(nextSession);
 		});
 
+		const ticker = setInterval(() => {
+			now = Date.now();
+		}, 30000);
+
 		return () => {
+			clearInterval(ticker);
 			subscription.unsubscribe();
 			unsubscribeRealtime?.();
 		};
@@ -287,15 +293,29 @@
 		}).format(new Date(value));
 	}
 
-	function formatLastUpdated(value: string | undefined) {
+	function formatLastUpdated(value: string | undefined, currentTime: number) {
 		if (!value) {
 			return 'Waiting for first update';
 		}
 
+		const then = new Date(value).getTime();
+		const diffSeconds = Math.floor((currentTime - then) / 1000);
+
+		if (diffSeconds < 45) return 'Just now';
+
+		const diffMinutes = Math.floor(diffSeconds / 60);
+		if (diffMinutes < 60) return `${diffMinutes} min ago`;
+
+		const diffHours = Math.floor(diffMinutes / 60);
+		if (diffHours < 24) return `${diffHours}h ago`;
+
+		const diffDays = Math.floor(diffHours / 24);
+		if (diffDays === 1) return 'Yesterday';
+		if (diffDays < 7) return `${diffDays} days ago`;
+
 		return new Intl.DateTimeFormat(undefined, {
-			hour: 'numeric',
-			minute: '2-digit',
-			second: '2-digit'
+			month: 'short',
+			day: 'numeric'
 		}).format(new Date(value));
 	}
 
@@ -382,7 +402,7 @@
 			</section>
 		{:else if status}
 			<div class="px-1 text-xs font-semibold text-[#a89b8c]">
-				<span>Updated {formatLastUpdated(status.last_updated)}</span>
+				<span>Updated {formatLastUpdated(status.last_updated, now)}</span>
 			</div>
 
 			{#if profile.role === 'husband'}
@@ -391,7 +411,7 @@
 					style="animation-delay: 0ms"
 				>
 					<div class="p-6 sm:p-8">
-						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">Wife is</p>
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] opacity-70">She says</p>
 						{#key wifeStatus.label}
 							<p
 								class="font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl"
@@ -435,7 +455,7 @@
 							disabled={saving}
 							onclick={toggleTaped}
 						>
-							{status.husband_is_taped ? 'Taped' : 'Not Taped'}
+							{status.husband_is_taped ? 'Taped' : 'Not taped'}
 						</button>
 
 						{#if status.husband_is_taped}
@@ -468,7 +488,7 @@
 					style="animation-delay: 0ms"
 				>
 					<div class="p-6 sm:p-8">
-						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">Husband is</p>
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">He's</p>
 						{#key status.husband_is_taped}
 							<p
 								class={`font-display animate-soft-fade-in mt-4 text-6xl font-medium leading-[0.9] tracking-tight sm:text-8xl ${status.husband_is_taped ? 'text-[#4a7a3a]' : 'text-[#2a1e18]'}`}
@@ -501,7 +521,7 @@
 					</div>
 
 					<div class="border-t border-[#ebe1d5] bg-[#fffdfb] p-6 sm:p-8">
-						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">You</p>
+						<p class="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#a89b8c]">You say</p>
 						<div class="mt-4 grid gap-3">
 							{#each wifeStatusOptions as option (option.value)}
 								<button
