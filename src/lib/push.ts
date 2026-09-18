@@ -40,7 +40,7 @@ export async function subscribeToPush(userId: string, publicVapidKey = import.me
 
 	const subscriptionJson = subscription.toJSON();
 
-	await supabase.from('push_subscriptions').upsert(
+	const { error } = await supabase.from('push_subscriptions').upsert(
 		{
 			user_id: userId,
 			endpoint: subscription.endpoint,
@@ -48,6 +48,10 @@ export async function subscribeToPush(userId: string, publicVapidKey = import.me
 		},
 		{ onConflict: 'endpoint' }
 	);
+
+	if (error) {
+		return { ok: false, reason: error.message } satisfies PushRegistrationResult;
+	}
 
 	return { ok: true, subscription: subscriptionJson } satisfies PushRegistrationResult;
 }

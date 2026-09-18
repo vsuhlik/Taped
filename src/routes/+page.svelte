@@ -170,6 +170,10 @@
 	}
 
 	async function signOut() {
+		if (!confirm("Sign out of Je t'aime?")) {
+			return;
+		}
+
 		await supabase.auth.signOut();
 	}
 

@@ -77,11 +77,11 @@ export function subscribeToSharedStatus(onStatus: (status: SharedStatus) => void
 		)
 		.subscribe((state, error) => {
 			if (error) {
-				onError(error.message);
+				console.error('Realtime subscription error:', error);
 			}
 
 			if (state === 'CHANNEL_ERROR') {
-				onError('Realtime channel could not stay connected.');
+				onError('Live updates paused — pull to refresh.');
 			}
 		});
 
