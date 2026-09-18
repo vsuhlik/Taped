@@ -58,6 +58,8 @@
 	let profile = $state<Profile | null>(null);
 	let pushSubscribed = $state<boolean | null>(null);
 	let realtimeMessage = $state('Realtime connecting');
+	let heartBusy = $state(false);
+	let heartSent = $state(false);
 	let saving = $state(false);
 	let session = $state<Session | null>(null);
 	let status = $state<SharedStatus | null>(null);
@@ -190,6 +192,33 @@
 		}
 
 		await supabase.auth.signOut();
+	}
+
+	async function sendHeart() {
+		if (heartBusy || !session) {
+			return;
+		}
+
+		heartBusy = true;
+		errorMessage = '';
+		message = '';
+
+		try {
+			const { error } = await supabase.functions.invoke('send-heart');
+
+			if (error) {
+				throw error;
+			}
+
+			heartSent = true;
+			setTimeout(() => {
+				heartSent = false;
+			}, 2000);
+		} catch (error) {
+			errorMessage = messageFromError(error);
+		} finally {
+			heartBusy = false;
+		}
 	}
 
 	async function toggleTaped() {
@@ -539,6 +568,50 @@
 					</div>
 				</section>
 			{/if}
+
+			<button
+				type="button"
+				class={`animate-fade-up mt-2 flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-4 text-sm font-bold shadow-soft transition active:scale-[0.98] disabled:opacity-60 ${
+					heartSent
+						? 'border-[#e8b4b4] bg-[#f8e5e5] text-[#8b3a4a]'
+						: 'border-[#ebe1d5] bg-[#fffdfb] text-[#8b3a4a]'
+				}`}
+				style="animation-delay: 150ms"
+				disabled={heartBusy}
+				onclick={sendHeart}
+			>
+				{#if heartSent}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+					</svg>
+					<span>Sent</span>
+				{:else}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+					</svg>
+					<span>Send a heart</span>
+				{/if}
+			</button>
 
 			<footer class="mt-2 flex items-center justify-between gap-4 border-t border-[#ebe1d5] px-1 pt-6">
 				<button
