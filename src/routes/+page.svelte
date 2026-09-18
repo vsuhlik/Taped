@@ -65,6 +65,14 @@
 	let hydrateVersion = 0;
 	let unsubscribeRealtime: (() => void) | null = null;
 
+	const greeting = $derived.by(() => {
+		const hour = new Date().getHours();
+		if (hour >= 5 && hour < 12) return 'Good morning';
+		if (hour >= 12 && hour < 17) return 'Good afternoon';
+		if (hour >= 17 && hour < 22) return 'Good evening';
+		return 'Hello';
+	});
+
 	const wifeStatus = $derived(status ? wifeStatuses[status.wife_status] : wifeStatuses.not_ready);
 	const pushConfigured = $derived(Boolean(import.meta.env.VITE_PUBLIC_VAPID_KEY));
 
@@ -193,7 +201,7 @@
 
 		try {
 			await setHusbandTapeStatus(nextTapedValue, localInputToIso(offTimeLocal));
-			message = 'Tape status saved.';
+			message = 'Saved.';
 		} catch (error) {
 			errorMessage = messageFromError(error);
 		} finally {
@@ -208,7 +216,7 @@
 
 		try {
 			await saveWifeStatus(nextStatus);
-			message = 'Availability saved.';
+			message = 'Saved.';
 		} catch (error) {
 			errorMessage = messageFromError(error);
 		} finally {
@@ -228,7 +236,7 @@
 			try {
 				await unsubscribeFromPush();
 				pushSubscribed = false;
-				message = 'Lock screen alerts are disabled on this device.';
+				message = 'Alerts off.';
 			} catch (error) {
 				errorMessage = messageFromError(error);
 			}
@@ -239,7 +247,7 @@
 
 		if (result.ok) {
 			pushSubscribed = true;
-			message = 'Lock screen alerts are enabled on this device.';
+			message = 'Alerts on.';
 		} else {
 			errorMessage = result.reason;
 		}
@@ -269,7 +277,7 @@
 
 	function formatDateTime(value: string | null) {
 		if (!value) {
-			return 'No time set';
+			return 'Not set';
 		}
 
 		return new Intl.DateTimeFormat(undefined, {
@@ -304,9 +312,11 @@
 	<div class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-5 px-4 py-5 sm:px-6 sm:py-8">
 		<header class="flex items-center justify-between gap-4">
 			<div>
-				<p class="font-display text-3xl font-medium italic leading-none text-[#2a1e18]">Je t'aime</p>
-				<p class="mt-2 text-[0.65rem] font-bold uppercase tracking-[0.28em] text-[#7a6b5e]">
-					Shared status
+				<p class="font-display text-2xl font-medium leading-tight text-[#2a1e18]">
+					{greeting}{profile ? `, ${profile.display_name}` : ''}
+				</p>
+				<p class="mt-2 text-[0.6rem] font-bold uppercase tracking-[0.32em] text-[#a89b8c]">
+					Je t'aime
 				</p>
 			</div>
 
@@ -416,7 +426,23 @@
 					<div class="flex items-center justify-between gap-4">
 						<div>
 							<h2 class="text-xl font-bold text-[#2a1e18]">Tape Status</h2>
-							<p class="text-sm text-[#7a6b5e]">Estimated off: {formatDateTime(status.tape_estimated_off)}</p>
+							<p class="mt-1 flex items-center gap-1.5 text-sm text-[#7a6b5e]">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="13"
+									height="13"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<circle cx="12" cy="12" r="10" />
+									<polyline points="12 6 12 12 16 14" />
+								</svg>
+								<span>Estimated off: {formatDateTime(status.tape_estimated_off)}</span>
+							</p>
 						</div>
 					</div>
 
@@ -464,7 +490,23 @@
 						</p>
 					{/key}
 					<div class="mt-6 rounded-2xl border border-[#ebe1d5] bg-[#faf6f0] p-4">
-						<p class="text-sm font-semibold text-[#7a6b5e]">Estimated off-time</p>
+						<p class="flex items-center gap-1.5 text-sm font-semibold text-[#7a6b5e]">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="13"
+								height="13"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<polyline points="12 6 12 12 16 14" />
+							</svg>
+							<span>Estimated off-time</span>
+						</p>
 						<p class="mt-1 text-2xl font-black text-[#2a1e18]">{formatDateTime(status.tape_estimated_off)}</p>
 					</div>
 				</section>
