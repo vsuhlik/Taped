@@ -46,14 +46,8 @@ serve(async (req) => {
       body = newRecord.husband_is_taped ? 'Now Taped' : 'Tape Off'
     } else if (oldRecord.tape_estimated_off !== newRecord.tape_estimated_off) {
       notifyRole = 'wife'
-      title = 'Tape Off-Time Updated'
-      body = newRecord.tape_estimated_off
-        ? `Scheduled off: ${new Date(newRecord.tape_estimated_off).toLocaleString('en-US', {
-            weekday: 'short',
-            hour: 'numeric',
-            minute: '2-digit',
-          })}`
-        : 'Off-time cleared'
+      title = 'Off-Time Updated'
+      body = newRecord.tape_estimated_off ? 'A new time is set.' : 'Off-time cleared.'
     } else if (oldRecord.wife_status !== newRecord.wife_status) {
       notifyRole = 'husband'
       title = 'Wife Availability'
