@@ -310,31 +310,13 @@
 
 <main class="min-h-screen bg-[#faf6f0] text-[#2a1e18]">
 	<div class="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-5 px-4 py-5 sm:px-6 sm:py-8">
-		<header class="flex items-center justify-between gap-4">
-			<div>
-				<p class="font-display text-2xl font-medium leading-tight text-[#2a1e18]">
-					{greeting}{profile ? `, ${profile.display_name}` : ''}
-				</p>
-				<p class="mt-2 text-[0.6rem] font-bold uppercase tracking-[0.32em] text-[#a89b8c]">
-					Je t'aime
-				</p>
-			</div>
-
-			{#if profile}
-				<div class="flex items-center gap-2">
-					<div class="rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 py-2 text-right shadow-soft">
-						<p class="text-sm font-semibold text-[#2a1e18]">{profile.display_name}</p>
-						<p class="text-xs capitalize text-[#7a6b5e]">{profile.role}</p>
-					</div>
-					<button
-						type="button"
-						class="rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-3 py-2 text-sm font-semibold text-[#7a6b5e] shadow-soft"
-						onclick={signOut}
-					>
-						Sign out
-					</button>
-				</div>
-			{/if}
+		<header class="px-1">
+			<p class="font-display text-3xl font-medium leading-tight text-[#2a1e18]">
+				{greeting}{profile ? `, ${profile.display_name}` : ''}
+			</p>
+			<p class="mt-3 text-[0.6rem] font-bold uppercase tracking-[0.32em] text-[#a89b8c]">
+				Je t'aime
+			</p>
 		</header>
 
 		{#if errorMessage}
@@ -399,8 +381,7 @@
 				<p class="mt-2 text-sm text-[#8a6519]">Run the seed block in supabase/schema.sql for this signed-in email.</p>
 			</section>
 		{:else if status}
-			<div class="flex items-center justify-between gap-3 text-xs font-semibold text-[#a89b8c]">
-				<span>{realtimeMessage}</span>
+			<div class="px-1 text-xs font-semibold text-[#a89b8c]">
 				<span>Updated {formatLastUpdated(status.last_updated)}</span>
 			</div>
 
@@ -527,23 +508,31 @@
 				</section>
 			{/if}
 
-			<button
-				type="button"
-				class="animate-fade-up h-11 rounded-2xl border border-[#ebe1d5] bg-[#fffdfb] px-4 text-sm font-bold text-[#7a6b5e] shadow-soft"
-				style="animation-delay: 200ms"
-				disabled={!pushConfigured || pushSubscribed === null}
-				onclick={togglePush}
-			>
-				{#if !pushConfigured}
-					Alerts unavailable
-				{:else if pushSubscribed === null}
-					Checking alerts…
-				{:else if pushSubscribed}
-					Alerts on — tap to disable
-				{:else}
-					Enable alerts
-				{/if}
-			</button>
+			<footer class="mt-2 flex items-center justify-between gap-4 border-t border-[#ebe1d5] px-1 pt-6">
+				<button
+					type="button"
+					class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#a89b8c] transition hover:text-[#7a6b5e] disabled:opacity-50"
+					disabled={!pushConfigured || pushSubscribed === null}
+					onclick={togglePush}
+				>
+					{#if !pushConfigured}
+						Alerts unavailable
+					{:else if pushSubscribed === null}
+						Checking…
+					{:else if pushSubscribed}
+						Alerts on
+					{:else}
+						Enable alerts
+					{/if}
+				</button>
+				<button
+					type="button"
+					class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-[#a89b8c] transition hover:text-[#7a6b5e]"
+					onclick={signOut}
+				>
+					Sign out
+				</button>
+			</footer>
 		{/if}
 	</div>
 </main>
